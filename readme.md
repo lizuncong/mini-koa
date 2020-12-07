@@ -142,7 +142,7 @@ let mid2 = async (ctx, next) => {
 function compose(mid1, mid2){
     return ctx => {
         return mid1(ctx, function next(){
-            mid2(ctx, function next(){})
+            return mid2(ctx, function next(){})
         })
     }
 }
@@ -175,7 +175,17 @@ let mid3 = async (ctx, next) => {
     console.log('mid3....out')
 }
 
+
 function compose(middlewares){
-    
+    return (ctx) => {
+        return dispatch(0)
+        function dispatch(i){
+            const mid = middlewares[i]
+            if(!mid) return Promise.resolve()
+            return mid(ctx, function next(){
+                return dispatch(i + 1)
+            })
+        }
+    }
 }
 ```
